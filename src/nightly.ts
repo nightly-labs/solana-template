@@ -4,10 +4,8 @@ const DEFAULT_PUBLICKEY = new PublicKey(0)
 
 export class NightlyWalletAdapter implements WalletAdapter {
   _publicKey: PublicKey
-  _onProcess: boolean
   _connected: boolean
   constructor() {
-    this._onProcess = false
     this._connected = false
     this._publicKey = DEFAULT_PUBLICKEY
   }
@@ -45,19 +43,13 @@ export class NightlyWalletAdapter implements WalletAdapter {
   }
 
   async connect(onDisconnect?: () => void) {
-    if (this._onProcess) {
-      throw new Error('Connection in progress')
-    }
-    this._onProcess = true
-
     try {
       const pk = await this._provider.connect(onDisconnect)
       this._publicKey = pk
       this._connected = true
-      this._onProcess = false
       return pk
     } catch (error) {
-      this._onProcess = false
+      console.log(error)
       throw new Error('User refused connection')
     }
   }
