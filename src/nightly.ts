@@ -42,6 +42,14 @@ export class NightlyWalletAdapter implements WalletAdapter {
     return await this._provider.signTransaction(transaction)
   }
 
+  async signMessage(msg: string) {
+    if (!this._provider) {
+      return msg
+    }
+
+    return await this._provider.signMessage(msg)
+  }
+
   async connect(onDisconnect?: () => void) {
     try {
       const pk = await this._provider.connect(onDisconnect)
