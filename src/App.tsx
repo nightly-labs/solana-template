@@ -86,7 +86,7 @@ function App() {
             const signedMessage = await NightlySolana.signMessage(messageToSign)
             console.log(signedMessage)
           }}>
-          Sing Message
+          Sign Message
         </Button>
         <Button
           variant='contained'
