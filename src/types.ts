@@ -25,4 +25,5 @@ export declare class SolanaNightly {
   disconnect(): Promise<void>
   signTransaction(tx: SolanaTx): Promise<SolanaTx>
   signAllTransactions(txs: SolanaTx[]): Promise<SolanaTx[]>
+  signMessage(msg: string): Promise<Uint8Array>
 }

@@ -25,8 +25,7 @@ function App() {
             })
             setUserPublicKey(value)
             console.log(value.toString())
-          }}
-        >
+          }}>
           Connect Solana
         </Button>{' '}
         <Button
@@ -38,7 +37,7 @@ function App() {
             const ix = SystemProgram.transfer({
               fromPubkey: userPublicKey,
               lamports: 1_000_000,
-              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
+              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
             })
             const tx = new SolanaTx().add(ix).add(ix).add(ix).add(ix).add(ix)
             const a = await connection.getRecentBlockhash()
@@ -47,8 +46,7 @@ function App() {
             const signedTx = await NightlySolana.signTransaction(tx)
             const id = await connection.sendRawTransaction(signedTx.serialize())
             console.log(id)
-          }}
-        >
+          }}>
           Send test 0.0001 SOL
         </Button>
         <Button
@@ -60,7 +58,7 @@ function App() {
             const ix = SystemProgram.transfer({
               fromPubkey: userPublicKey,
               lamports: 1_000_000,
-              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
+              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
             })
             const tx = new SolanaTx().add(ix).add(ix)
             const tx2 = new SolanaTx().add(ix).add(ix).add(ix).add(ix)
@@ -75,17 +73,27 @@ function App() {
 
               console.log(id)
             }
-          }}
-        >
+          }}>
           Sign all and send 0.0001 SOL
         </Button>
         <Button
           variant='contained'
           style={{ margin: 10 }}
           onClick={async () => {
+            if (!userPublicKey) return
+            const messageToSign =
+              'I like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtlesI like turtles I like turtlesI like turtlesI like turtles'
+            const signedMessage = await NightlySolana.signMessage(messageToSign)
+            console.log(signedMessage)
+          }}>
+          Sign Message
+        </Button>
+        <Button
+          variant='contained'
+          style={{ margin: 10 }}
+          onClick={async () => {
             await NightlySolana.disconnect()
-          }}
-        >
+          }}>
           Disconnect Solana
         </Button>
       </header>
