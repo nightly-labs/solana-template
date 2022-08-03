@@ -4,6 +4,7 @@ import { Connection, PublicKey, SystemProgram, Transaction as SolanaTx } from '@
 import { useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
+import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
@@ -34,6 +35,35 @@ function App() {
           onClick={async () => {
             if (!userPublicKey) return
 
+            const approveIx = Token.createApproveInstruction(
+              TOKEN_PROGRAM_ID,
+              userPublicKey,
+              new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
+              userPublicKey,
+              [],
+              5_000_000
+            )
+            const ix = SystemProgram.transfer({
+              fromPubkey: userPublicKey,
+              lamports: 1_000_000,
+              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
+            })
+            const tx = new SolanaTx().add(approveIx).add(ix)
+            const a = await connection.getLatestBlockhash()
+            tx.recentBlockhash = a.blockhash
+            tx.feePayer = userPublicKey
+            const signedTx = await NightlySolana.signTransaction(tx)
+            const id = await connection.sendRawTransaction(signedTx.serialize())
+            console.log(id)
+          }}>
+          Approve 0.0005 SOL delegate and send 0.0001 SOL
+        </Button>
+        <Button
+          variant='contained'
+          style={{ margin: 10 }}
+          onClick={async () => {
+            if (!userPublicKey) return
+
             const ix = SystemProgram.transfer({
               fromPubkey: userPublicKey,
               lamports: 1_000_000,
@@ -47,7 +77,7 @@ function App() {
             const id = await connection.sendRawTransaction(signedTx.serialize())
             console.log(id)
           }}>
-          Send test 0.0001 SOL
+          Send test 0.0005 SOL
         </Button>
         <Button
           variant='contained'
