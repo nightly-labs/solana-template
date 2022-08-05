@@ -4,7 +4,7 @@ import { Connection, PublicKey, SystemProgram, Transaction as SolanaTx } from '@
 import { useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
-import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
@@ -35,20 +35,45 @@ function App() {
           onClick={async () => {
             if (!userPublicKey) return
 
+            const target = await Token.getAssociatedTokenAddress(
+              ASSOCIATED_TOKEN_PROGRAM_ID,
+              TOKEN_PROGRAM_ID,
+              new PublicKey('So11111111111111111111111111111111111111112'), // mint: Public Key. wSOL
+              userPublicKey // owner: Public Key
+            )
+
+            const associatedTx = Token.createAssociatedTokenAccountInstruction(
+              ASSOCIATED_TOKEN_PROGRAM_ID,
+              TOKEN_PROGRAM_ID,
+              new PublicKey('So11111111111111111111111111111111111111112'), // mint: Public Key. wSOL
+              target, // associatedAccount: PublicKey
+              userPublicKey, // owner: PublicKey
+              userPublicKey // payer: PublicKey
+            )
+
             const approveIx = Token.createApproveInstruction(
               TOKEN_PROGRAM_ID,
-              userPublicKey,
+              target,
               new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
               userPublicKey,
               [],
               5_000_000
             )
+
             const ix = SystemProgram.transfer({
               fromPubkey: userPublicKey,
               lamports: 1_000_000,
               toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
             })
-            const tx = new SolanaTx().add(approveIx).add(ix)
+            const tx = new SolanaTx()
+            const existATA = connection.getAccountInfo(target)
+
+            if (!existATA) {
+              tx.add(associatedTx)
+            }
+
+            tx.add(approveIx).add(ix)
+
             const a = await connection.getLatestBlockhash()
             tx.recentBlockhash = a.blockhash
             tx.feePayer = userPublicKey
