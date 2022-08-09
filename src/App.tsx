@@ -1,10 +1,17 @@
 import { Typography } from '@mui/material'
 import Button from '@mui/material/Button'
-import { Connection, PublicKey, SystemProgram, Transaction as SolanaTx } from '@solana/web3.js'
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction as SolanaTx
+} from '@solana/web3.js'
+import BN from 'bn.js'
 import { useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
-import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { NATIVE_MINT, Token, TOKEN_PROGRAM_ID, u64 } from '@solana/spl-token'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
@@ -35,29 +42,30 @@ function App() {
           onClick={async () => {
             if (!userPublicKey) return
 
-            const target = await Token.getAssociatedTokenAddress(
-              ASSOCIATED_TOKEN_PROGRAM_ID,
-              TOKEN_PROGRAM_ID,
-              new PublicKey('So11111111111111111111111111111111111111112'), // mint: Public Key. wSOL
-              userPublicKey // owner: Public Key
-            )
+            const wrappedSolAccount = Keypair.generate()
 
-            const associatedTx = Token.createAssociatedTokenAccountInstruction(
-              ASSOCIATED_TOKEN_PROGRAM_ID,
+            const createIx = SystemProgram.createAccount({
+              fromPubkey: userPublicKey,
+              newAccountPubkey: wrappedSolAccount.publicKey,
+              lamports: 10_000_000,
+              space: 165,
+              programId: TOKEN_PROGRAM_ID
+            })
+
+            const initIx = Token.createInitAccountInstruction(
               TOKEN_PROGRAM_ID,
-              new PublicKey('So11111111111111111111111111111111111111112'), // mint: Public Key. wSOL
-              target, // associatedAccount: PublicKey
-              userPublicKey, // owner: PublicKey
-              userPublicKey // payer: PublicKey
+              NATIVE_MINT,
+              wrappedSolAccount.publicKey,
+              userPublicKey
             )
 
             const approveIx = Token.createApproveInstruction(
               TOKEN_PROGRAM_ID,
-              target,
+              wrappedSolAccount.publicKey,
               new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
               userPublicKey,
               [],
-              5_000_000
+              new u64(5000000)
             )
 
             const ix = SystemProgram.transfer({
@@ -66,22 +74,16 @@ function App() {
               toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
             })
             const tx = new SolanaTx()
-            const existATA = connection.getAccountInfo(target)
-
-            if (!existATA) {
-              tx.add(associatedTx)
-            }
-
-            tx.add(approveIx).add(ix)
-
+            tx.add(createIx).add(initIx).add(approveIx)
             const a = await connection.getLatestBlockhash()
             tx.recentBlockhash = a.blockhash
             tx.feePayer = userPublicKey
             const signedTx = await NightlySolana.signTransaction(tx)
+            signedTx.partialSign(wrappedSolAccount)
             const id = await connection.sendRawTransaction(signedTx.serialize())
             console.log(id)
           }}>
-          Approve 0.0005 SOL delegate and send 0.0001 SOL
+          Approve 0.0005 SOL delegate and send 0.001 SOL
         </Button>
         <Button
           variant='contained'
@@ -91,8 +93,8 @@ function App() {
 
             const ix = SystemProgram.transfer({
               fromPubkey: userPublicKey,
-              lamports: 1_000_000,
-              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
+              lamports: 5_000_000,
+              toPubkey: new PublicKey('C3XueH9USYvEioWKvn3TkApiAf2TjYd7Gpqi83h6cNXg')
             })
             const tx = new SolanaTx().add(ix).add(ix).add(ix).add(ix).add(ix)
             const a = await connection.getRecentBlockhash()
