@@ -10,7 +10,7 @@ import {
 import { useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
-import { NATIVE_MINT, Token, TOKEN_PROGRAM_ID, u64 } from '@solana/spl-token'
+import { NATIVE_MINT, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
