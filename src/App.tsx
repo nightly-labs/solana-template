@@ -7,7 +7,6 @@ import {
   SystemProgram,
   Transaction as SolanaTx
 } from '@solana/web3.js'
-import BN from 'bn.js'
 import { useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
@@ -65,7 +64,7 @@ function App() {
               new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
               userPublicKey,
               [],
-              new u64(5000000)
+              5000000
             )
 
             const ix = SystemProgram.transfer({
