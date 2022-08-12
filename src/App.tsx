@@ -51,10 +51,10 @@ function App() {
             })
 
             const initIx = Token.createInitAccountInstruction(
-              wrappedSolAccount.publicKey,
+              TOKEN_PROGRAM_ID,
               NATIVE_MINT,
-              userPublicKey,
-              TOKEN_PROGRAM_ID
+              wrappedSolAccount.publicKey,
+              userPublicKey
             )
 
             const approveIx = Token.createApproveInstruction(
