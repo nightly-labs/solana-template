@@ -15,8 +15,8 @@ export default defineConfig({
     // NodeGlobalsPolyfillPlugin({
     //   buffer: true
     // })
-  ],
-  define: { global: 'globalThis' }
+  ]
+  // define: { global: 'globalThis' }
   // build: {
   //   rollupOptions: {
   //     plugins: [
