@@ -23,6 +23,7 @@ function App() {
         </Typography>
         <Button
           variant='contained'
+          color='primary'
           style={{ margin: 10 }}
           onClick={async () => {
             const value = await NightlySolana.connect(() => {
@@ -36,6 +37,7 @@ function App() {
         </Button>{' '}
         <Button
           variant='contained'
+          color='primary'
           style={{ margin: 10 }}
           onClick={async () => {
             if (!userPublicKey) return
@@ -85,6 +87,7 @@ function App() {
         </Button>
         <Button
           variant='contained'
+          color='primary'
           style={{ margin: 10 }}
           onClick={async () => {
             if (!userPublicKey) return
@@ -106,6 +109,7 @@ function App() {
         </Button>
         <Button
           variant='contained'
+          color='primary'
           style={{ margin: 10 }}
           onClick={async () => {
             if (!userPublicKey) return
@@ -133,6 +137,7 @@ function App() {
         </Button>
         <Button
           variant='contained'
+          color='primary'
           style={{ margin: 10 }}
           onClick={async () => {
             if (!userPublicKey) return
@@ -145,6 +150,7 @@ function App() {
         </Button>
         <Button
           variant='contained'
+          color='secondary'
           style={{ margin: 10 }}
           onClick={async () => {
             await NightlySolana.disconnect()
