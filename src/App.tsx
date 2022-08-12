@@ -8,12 +8,7 @@ import {
 import { useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
-import {
-  NATIVE_MINT,
-  TOKEN_PROGRAM_ID,
-  createApproveInstruction,
-  createInitializeAccountInstruction
-} from '@solana/spl-token'
+import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { Button, Typography } from '@material-ui/core'
 
 const NightlySolana = new NightlyWalletAdapter()
@@ -55,20 +50,20 @@ function App() {
               programId: TOKEN_PROGRAM_ID
             })
 
-            const initIx = createInitializeAccountInstruction(
+            const initIx = Token.createInitAccountInstruction(
               wrappedSolAccount.publicKey,
               NATIVE_MINT,
               userPublicKey,
               TOKEN_PROGRAM_ID
             )
 
-            const approveIx = createApproveInstruction(
+            const approveIx = Token.createApproveInstruction(
+              TOKEN_PROGRAM_ID,
               wrappedSolAccount.publicKey,
-              userPublicKey,
               new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
-              5000000,
+              userPublicKey,
               [],
-              TOKEN_PROGRAM_ID
+              5000000
             )
 
             const ix = SystemProgram.transfer({
