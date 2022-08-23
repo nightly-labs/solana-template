@@ -10,10 +10,43 @@ import './App.css'
 import { NightlyWalletAdapter } from './nightly'
 import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { Button, Typography } from '@material-ui/core'
+import { AppSolana } from '@nightlylabs/connect-solana'
+import { WebsocketBuilder } from 'websocket-ts'
+
+interface SolanaOnConnect {
+  publicKey: PublicKey
+}
+
+// interface SolanaAppInfo {
+//   application: string // 'Application name'
+//   description: string // 'Description'
+//   additionalInfo: string // Some Additional info
+//   icon: string // https://application/logo.png
+//   url?: string // default: wss://relay.nightly.app/app
+//   onUserConnect: (params: SolanaOnConnect) => void // userConnectedCallback
+//   timeout?: number //  40s default timeout (timer for Server answer request). On timeout throws Error 'Connection timed out'.
+// }
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
+
+const APP_ADDRESS = 'wss://relay.nightly.app/app'
+
 function App() {
+  const testAppInfo = {
+    appMetadata: {
+      additionalInfo: ' Test Additional info',
+      application: 'Test application',
+      description: 'Test description',
+      icon: 'https://docs.nightly.app/img/logo.png',
+      persistent: false
+    },
+    url: APP_ADDRESS,
+    onUserConnect: ({ publicKey }) => {
+      setUserPublicKey(publicKey)
+    }
+  }
+
   const [userPublicKey, setUserPublicKey] = useState<PublicKey | undefined>(undefined)
   return (
     <div className='App'>
@@ -34,7 +67,21 @@ function App() {
             console.log(value.toString())
           }}>
           Connect Solana
-        </Button>{' '}
+        </Button>
+        <Button
+          variant='contained'
+          color='primary'
+          style={{ margin: 10 }}
+          onClick={async () => {
+            //const a = new AppSolana(ws as WebSocket, 40)
+            try {
+              await AppSolana.build(testAppInfo)
+            } catch (er) {
+              console.log(er)
+            }
+          }}>
+          Nightly Connect
+        </Button>
         <Button
           variant='contained'
           color='primary'
