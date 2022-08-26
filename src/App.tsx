@@ -5,7 +5,7 @@ import {
   SystemProgram,
   Transaction as SolanaTx
 } from '@solana/web3.js'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
 import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
