@@ -5,22 +5,43 @@ import {
   SystemProgram,
   Transaction as SolanaTx
 } from '@solana/web3.js'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
 import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { Button, Typography } from '@material-ui/core'
+import { NCSolanaWalletAdapter } from '@nightlylabs/connect-solana'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
+
+const NightlyConnectSolana = new NCSolanaWalletAdapter({
+  appMetadata: {
+    additionalInfo: ' Test Additional info',
+    application: 'Test application',
+    description: 'Test description',
+    icon: 'https://docs.nightly.app/img/logo.png'
+  }
+})
 function App() {
   const [userPublicKey, setUserPublicKey] = useState<PublicKey | undefined>(undefined)
+  useEffect(() => {
+    NightlyConnectSolana.modal.onOpen = () => {
+      console.log('modal opened with event handler')
+    }
+    NightlyConnectSolana.on('connect', setUserPublicKey)
+    NightlyConnectSolana.on('error', error => {
+      console.log(error)
+    })
+  }, [])
+
   return (
     <div className='App'>
       <header className='App-header'>
         <Typography>
           {userPublicKey ? `Hello, ${userPublicKey.toBase58()}` : 'Hello, stranger'}
         </Typography>
+
         <Button
           variant='contained'
           color='primary'
@@ -34,54 +55,73 @@ function App() {
             console.log(value.toString())
           }}>
           Connect Solana
-        </Button>{' '}
+        </Button>
+        <Button
+          variant='contained'
+          color='primary'
+          style={{ margin: 10 }}
+          onClick={async () => {
+            await NightlyConnectSolana.connect()
+          }}>
+          Nightly Connect
+        </Button>
+
         <Button
           variant='contained'
           color='primary'
           style={{ margin: 10 }}
           onClick={async () => {
             if (!userPublicKey) return
+            try {
+              const wrappedSolAccount = Keypair.generate()
 
-            const wrappedSolAccount = Keypair.generate()
+              const createIx = SystemProgram.createAccount({
+                fromPubkey: userPublicKey,
+                newAccountPubkey: wrappedSolAccount.publicKey,
+                lamports: 10_000_000,
+                space: 165,
+                programId: TOKEN_PROGRAM_ID
+              })
 
-            const createIx = SystemProgram.createAccount({
-              fromPubkey: userPublicKey,
-              newAccountPubkey: wrappedSolAccount.publicKey,
-              lamports: 10_000_000,
-              space: 165,
-              programId: TOKEN_PROGRAM_ID
-            })
+              const initIx = Token.createInitAccountInstruction(
+                TOKEN_PROGRAM_ID,
+                NATIVE_MINT,
+                wrappedSolAccount.publicKey,
+                userPublicKey
+              )
 
-            const initIx = Token.createInitAccountInstruction(
-              TOKEN_PROGRAM_ID,
-              NATIVE_MINT,
-              wrappedSolAccount.publicKey,
-              userPublicKey
-            )
+              const approveIx = Token.createApproveInstruction(
+                TOKEN_PROGRAM_ID,
+                wrappedSolAccount.publicKey,
+                new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
+                userPublicKey,
+                [],
+                5000000
+              )
 
-            const approveIx = Token.createApproveInstruction(
-              TOKEN_PROGRAM_ID,
-              wrappedSolAccount.publicKey,
-              new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv'),
-              userPublicKey,
-              [],
-              5000000
-            )
+              const tx = new SolanaTx()
 
-            const ix = SystemProgram.transfer({
-              fromPubkey: userPublicKey,
-              lamports: 1_000_000,
-              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
-            })
-            const tx = new SolanaTx()
-            tx.add(createIx).add(initIx).add(approveIx)
-            const a = await connection.getLatestBlockhash()
-            tx.recentBlockhash = a.blockhash
-            tx.feePayer = userPublicKey
-            const signedTx = await NightlySolana.signTransaction(tx)
-            signedTx.partialSign(wrappedSolAccount)
-            const id = await connection.sendRawTransaction(signedTx.serialize())
-            console.log(id)
+              tx.add(createIx).add(initIx).add(approveIx)
+
+              const a = await connection.getLatestBlockhash()
+
+              tx.recentBlockhash = a.blockhash
+              tx.feePayer = userPublicKey
+
+              if (NightlyConnectSolana.connected) {
+                const signedTx = await NightlyConnectSolana.signTransaction(tx)
+                signedTx.partialSign(wrappedSolAccount)
+                const id = await connection.sendRawTransaction(signedTx.serialize())
+                console.log(id)
+              } else {
+                const signedTx = await NightlySolana.signTransaction(tx)
+                signedTx.partialSign(wrappedSolAccount)
+                const id = await connection.sendRawTransaction(signedTx.serialize())
+                console.log(id)
+              }
+            } catch (err) {
+              console.log(err)
+            }
           }}>
           Approve 0.0005 SOL delegate and send 0.001 SOL
         </Button>
@@ -101,9 +141,15 @@ function App() {
             const a = await connection.getRecentBlockhash()
             tx.recentBlockhash = a.blockhash
             tx.feePayer = userPublicKey
-            const signedTx = await NightlySolana.signTransaction(tx)
-            const id = await connection.sendRawTransaction(signedTx.serialize())
-            console.log(id)
+            if (NightlyConnectSolana.connected) {
+              const signedTx = await NightlyConnectSolana.signTransaction(tx)
+              const id = await connection.sendRawTransaction(signedTx.serialize())
+              console.log(id)
+            } else {
+              const signedTx = await NightlySolana.signTransaction(tx)
+              const id = await connection.sendRawTransaction(signedTx.serialize())
+              console.log(id)
+            }
           }}>
           Send test 0.0005 SOL
         </Button>
@@ -153,7 +199,13 @@ function App() {
           color='secondary'
           style={{ margin: 10 }}
           onClick={async () => {
-            await NightlySolana.disconnect()
+            try {
+              await NightlySolana.disconnect()
+              await NightlyConnectSolana.disconnect()
+              setUserPublicKey(undefined)
+            } catch (err) {
+              console.log(err)
+            }
           }}>
           Disconnect Solana
         </Button>

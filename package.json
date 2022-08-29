@@ -14,6 +14,7 @@
     "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
     "@esbuild-plugins/node-resolve": "^0.1.4",
     "@material-ui/core": "^4.12.4",
+    "@nightlylabs/connect-solana": "^0.0.13",
     "@solana/spl-token": "0.1.8",
     "@solana/web3.js": "^1.50.1",
     "@types/bn.js": "^5.1.0",
