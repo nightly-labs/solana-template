@@ -17,7 +17,6 @@ const connection = new Connection('https://api.devnet.solana.com')
 
 const NightlyConnectSolana = new NCSolanaWalletAdapter({
   appMetadata: {
-    persistent: false,
     additionalInfo: ' Test Additional info',
     application: 'Test application',
     description: 'Test description',
