@@ -11,6 +11,7 @@ import { NightlyWalletAdapter } from './nightly'
 import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { Button, Typography } from '@material-ui/core'
 import { NCSolanaWalletAdapter } from '@nightlylabs/connect-solana'
+import docs from './docs.png'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
@@ -38,6 +39,17 @@ function App() {
   return (
     <div className='App'>
       <header className='App-header'>
+        <div>
+          <Button
+            variant='contained'
+            onClick={() => {
+              window.open('https://docs.nightly.app/docs/solana/solana/detecting')
+            }}
+            style={{ background: '#2680d9', color: '#000000', marginBottom: '64px' }}>
+            <img src={docs} style={{ width: '40px', height: '40px', paddingRight: '16px' }} />
+            Open documentation
+          </Button>
+        </div>
         <Typography>
           {userPublicKey ? `Hello, ${userPublicKey.toBase58()}` : 'Hello, stranger'}
         </Typography>
