@@ -11,6 +11,7 @@ import { NightlyWalletAdapter } from './nightly'
 import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { Button, Typography } from '@material-ui/core'
 import { NCSolanaWalletAdapter } from '@nightlylabs/connect-solana'
+// @ts-expect-error
 import docs from './docs.png'
 
 const NightlySolana = new NightlyWalletAdapter()
