@@ -11,6 +11,8 @@ import { NightlyWalletAdapter } from './nightly'
 import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { Button, Typography } from '@material-ui/core'
 import { NCSolanaWalletAdapter } from '@nightlylabs/connect-solana'
+// @ts-expect-error
+import docs from './docs.png'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
@@ -38,6 +40,18 @@ function App() {
   return (
     <div className='App'>
       <header className='App-header'>
+        <div>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => {
+              window.open('https://docs.nightly.app/docs/solana/solana/detecting')
+            }}
+            style={{ background: '#2680d9', marginBottom: '64px' }}>
+            <img src={docs} style={{ width: '40px', height: '40px', paddingRight: '16px' }} />
+            Open documentation
+          </Button>
+        </div>
         <Typography>
           {userPublicKey ? `Hello, ${userPublicKey.toBase58()}` : 'Hello, stranger'}
         </Typography>
@@ -45,7 +59,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             const value = await NightlySolana.connect(() => {
               console.log('Trigger disconnect Solana')
@@ -59,7 +73,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             await NightlyConnectSolana.connect()
           }}>
@@ -69,7 +83,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
             try {
@@ -128,7 +142,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
 
@@ -156,7 +170,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
 
@@ -184,7 +198,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
             const messageToSign =
