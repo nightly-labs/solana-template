@@ -43,10 +43,11 @@ function App() {
         <div>
           <Button
             variant='contained'
+            color='primary'
             onClick={() => {
               window.open('https://docs.nightly.app/docs/solana/solana/detecting')
             }}
-            style={{ background: '#2680d9', color: '#000000', marginBottom: '64px' }}>
+            style={{ background: '#2680d9', marginBottom: '64px' }}>
             <img src={docs} style={{ width: '40px', height: '40px', paddingRight: '16px' }} />
             Open documentation
           </Button>
@@ -58,7 +59,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             const value = await NightlySolana.connect(() => {
               console.log('Trigger disconnect Solana')
@@ -72,7 +73,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             await NightlyConnectSolana.connect()
           }}>
@@ -82,7 +83,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
             try {
@@ -141,7 +142,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
 
@@ -169,7 +170,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
 
@@ -197,7 +198,7 @@ function App() {
         <Button
           variant='contained'
           color='primary'
-          style={{ margin: 10 }}
+          style={{ margin: 10, background: '#2680d9' }}
           onClick={async () => {
             if (!userPublicKey) return
             const messageToSign =
