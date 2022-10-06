@@ -126,6 +126,7 @@ function App() {
 
               if (NightlyConnectSolana.connected) {
                 const signedTx = await NightlyConnectSolana.signTransaction(tx)
+                // @ts-expect-error
                 signedTx.sign([wrappedSolAccount])
                 const id = await connection.sendRawTransaction(signedTx.serialize())
                 console.log(id)
