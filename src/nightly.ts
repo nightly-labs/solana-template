@@ -1,4 +1,4 @@
-import { PublicKey, Transaction } from '@solana/web3.js'
+import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js'
 import { SolanaNightly, WalletAdapter } from './types'
 const DEFAULT_PUBLICKEY = new PublicKey(0)
 
@@ -14,9 +14,11 @@ export class NightlyWalletAdapter implements WalletAdapter {
     return this._connected
   }
 
-  public async signAllTransactions(transactions: Transaction[]): Promise<Transaction[]> {
+  public async signAllTransactions(
+    transactions: Transaction[] | VersionedTransaction[]
+  ): Promise<VersionedTransaction[]> {
     if (!this._provider) {
-      return transactions
+      throw new Error('SolanaNightly: solana is not defined')
     }
 
     return await this._provider.signAllTransactions(transactions)
@@ -34,9 +36,11 @@ export class NightlyWalletAdapter implements WalletAdapter {
     return this._publicKey || DEFAULT_PUBLICKEY
   }
 
-  async signTransaction(transaction: Transaction) {
+  async signTransaction(
+    transaction: VersionedTransaction | Transaction
+  ): Promise<VersionedTransaction> {
     if (!this._provider) {
-      return transaction
+      throw new Error('SolanaNightly: solana is not defined')
     }
 
     return await this._provider.signTransaction(transaction)

@@ -16,7 +16,7 @@
     "@material-ui/core": "^4.12.4",
     "@nightlylabs/connect-solana": "^0.0.13",
     "@solana/spl-token": "0.1.8",
-    "@solana/web3.js": "^1.50.1",
+    "@solana/web3.js": "^1.63.1",
     "@types/bn.js": "^5.1.0",
     "@types/node-fetch": "^2.6.2",
     "buffer": "^6.0.3",

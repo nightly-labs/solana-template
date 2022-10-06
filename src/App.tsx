@@ -1,9 +1,11 @@
 import {
   Connection,
   Keypair,
+  Message,
   PublicKey,
   SystemProgram,
-  Transaction as SolanaTx
+  Transaction as SolanaTx,
+  VersionedTransaction
 } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 import './App.css'
@@ -124,12 +126,12 @@ function App() {
 
               if (NightlyConnectSolana.connected) {
                 const signedTx = await NightlyConnectSolana.signTransaction(tx)
-                signedTx.partialSign(wrappedSolAccount)
+                signedTx.sign([wrappedSolAccount])
                 const id = await connection.sendRawTransaction(signedTx.serialize())
                 console.log(id)
               } else {
                 const signedTx = await NightlySolana.signTransaction(tx)
-                signedTx.partialSign(wrappedSolAccount)
+                signedTx.sign([wrappedSolAccount])
                 const id = await connection.sendRawTransaction(signedTx.serialize())
                 console.log(id)
               }
@@ -161,11 +163,39 @@ function App() {
               console.log(id)
             } else {
               const signedTx = await NightlySolana.signTransaction(tx)
+              console.log({ signedTx })
               const id = await connection.sendRawTransaction(signedTx.serialize())
               console.log(id)
             }
           }}>
           Send test 0.0005 SOL
+        </Button>
+        <Button
+          variant='contained'
+          color='primary'
+          style={{ margin: 10, background: '#2680d9' }}
+          onClick={async () => {
+            if (!userPublicKey) return
+
+            const a = await connection.getRecentBlockhash()
+            const versionedTx = new VersionedTransaction(
+              new Message({
+                header: {
+                  numRequiredSignatures: 1,
+                  numReadonlySignedAccounts: 0,
+                  numReadonlyUnsignedAccounts: 0
+                },
+                recentBlockhash: a.blockhash,
+                instructions: [],
+                accountKeys: [userPublicKey.toBase58()]
+              })
+            )
+
+            const signedTx = await NightlySolana.signTransaction(versionedTx)
+            const id = await connection.sendRawTransaction(signedTx.serialize())
+            console.log(id)
+          }}>
+          Send test versioned transaction
         </Button>
         <Button
           variant='contained'
