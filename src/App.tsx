@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { NightlyWalletAdapter } from './nightly'
 import { NATIVE_MINT, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
-import { Button, Typography } from '@material-ui/core'
+import { Button, Input, Typography } from '@material-ui/core'
 import { NCSolanaWalletAdapter } from '@nightlylabs/connect-solana'
 // @ts-expect-error
 import docs from './docs.png'
@@ -38,6 +38,8 @@ function App() {
       console.log(error)
     })
   }, [])
+
+  const [inputPubkey, setInputPubkey] = useState('')
 
   return (
     <div className='App'>
@@ -253,6 +255,44 @@ function App() {
             }
           }}>
           Disconnect Solana
+        </Button>
+        <Input
+          value={inputPubkey}
+          onChange={e => {
+            setInputPubkey(e.currentTarget.value)
+          }}
+          style={{ margin: 10, backgroundColor: 'white', width: 300 }}
+        />
+        <Button
+          variant='contained'
+          color='secondary'
+          style={{ margin: 10, backgroundColor: 'gold', color: 'black' }}
+          onClick={async () => {
+            const address = process.env.VITE_VERCEL_URL ?? 'https://solana-template-ten.vercel.app/'
+            const a = await connection.getRecentBlockhash()
+            const txs = [
+              Buffer.from(
+                new VersionedTransaction(
+                  new Message({
+                    header: {
+                      numRequiredSignatures: 1,
+                      numReadonlySignedAccounts: 0,
+                      numReadonlyUnsignedAccounts: 0
+                    },
+                    recentBlockhash: a.blockhash,
+                    instructions: [],
+                    accountKeys: [inputPubkey]
+                  })
+                ).serialize()
+              ).toString('hex')
+            ]
+            window.open(
+              `https://wallet.nightly.app?network=SOLANA&transactions=${JSON.stringify(
+                txs
+              )}&responseRoute=${encodeURIComponent(address)}`
+            )
+          }}>
+          Send 0.0001 SOL through Nightly Mobile deeplink
         </Button>
       </header>
     </div>
