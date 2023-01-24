@@ -6,7 +6,6 @@ import {
   SystemProgram,
   Transaction as SolanaTx,
   Transaction,
-  TransactionMessage,
   VersionedTransaction
 } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
@@ -31,6 +30,8 @@ const NightlyConnectSolana = new NCSolanaWalletAdapter({
 })
 function App() {
   const [userPublicKey, setUserPublicKey] = useState<PublicKey | undefined>(undefined)
+  const [hasError, setHasError] = useState(false)
+  const [hasTx, setHasTx] = useState(false)
   useEffect(() => {
     NightlyConnectSolana.modal.onOpen = () => {
       console.log('modal opened with event handler')
@@ -44,7 +45,7 @@ function App() {
     const params = new URLSearchParams(query)
 
     if (params.get('errorMessage') !== null) {
-      window.alert(params.get('errorMessage'))
+      setHasError(true)
       return
     }
 
@@ -56,7 +57,7 @@ function App() {
       tx => new VersionedTransaction(Transaction.from(Buffer.from(tx, 'hex')).compileMessage())
     )[0]
     connection.sendRawTransaction(transaction.serialize()).then(() => {
-      window.alert('Transaction sent')
+      setHasTx(true)
     })
   }, [])
 
@@ -77,6 +78,12 @@ function App() {
             Open documentation
           </Button>
         </div>
+        {hasError ? (
+          <Typography style={{ color: 'red' }}>Transaction from deeplink was not sent</Typography>
+        ) : null}
+        {hasTx ? (
+          <Typography style={{ color: 'green' }}>Transaction from deeplink was sent</Typography>
+        ) : null}
         <Typography>
           {userPublicKey ? `Hello, ${userPublicKey.toBase58()}` : 'Hello, stranger'}
         </Typography>
@@ -289,23 +296,18 @@ function App() {
           color='secondary'
           style={{ margin: 10, backgroundColor: 'gold', color: 'black' }}
           onClick={async () => {
-            const address = 'https://solana-template-ten.vercel.app/'
+            const address = 'https://solana-template-ten.vercel.app'
             const a = await connection.getRecentBlockhash()
             const ix = SystemProgram.transfer({
               fromPubkey: new PublicKey(inputPubkey),
               lamports: 1_000_000,
-              toPubkey: new PublicKey('C3XueH9USYvEioWKvn3TkApiAf2TjYd7Gpqi83h6cNXg')
+              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
             })
+            const tx = new SolanaTx().add(ix)
+            tx.recentBlockhash = a.blockhash
+            tx.feePayer = new PublicKey(inputPubkey)
             const txs = [
-              Buffer.from(
-                new VersionedTransaction(
-                  new TransactionMessage({
-                    payerKey: new PublicKey(inputPubkey),
-                    recentBlockhash: a.blockhash,
-                    instructions: [ix]
-                  }).compileToV0Message()
-                ).serialize()
-              ).toString('hex')
+              Buffer.from(new VersionedTransaction(tx.compileMessage()).serialize()).toString('hex')
             ]
             window.location.assign(
               `https://wallet.nightly.app/direct/signTransactions?network=SOLANA&transactions=${JSON.stringify(
