@@ -286,7 +286,7 @@ function App() {
                 ).serialize()
               ).toString('hex')
             ]
-            window.open(
+            window.location.assign(
               `https://wallet.nightly.app/direct/signTransactions?network=SOLANA&transactions=${JSON.stringify(
                 txs
               )}&responseRoute=${encodeURIComponent(address)}`
