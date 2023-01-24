@@ -6,6 +6,9 @@ export default defineConfig({
   build: {
     target: ['ES2020']
   },
+  define: {
+    'process.env.VITE_VERCEL_URL': process.env.VITE_VERCEL_URL 
+  },
   plugins: [
     react()
     // nodePolyfills(),
