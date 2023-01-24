@@ -44,16 +44,22 @@ function App() {
     const query = window.location.search
     const params = new URLSearchParams(query)
 
-    if (params.get('errorMessage') !== null) {
+    if (params.get('data') === null) {
+      return
+    }
+
+    const data = JSON.parse(params.get('data') as string)
+
+    if (typeof data?.errorMessage !== 'undefined') {
       setHasError(true)
       return
     }
 
-    if (params.get('signedTransactions') === null) {
+    if (typeof data?.signedTransactions === 'undefined') {
       return
     }
 
-    const transaction = (JSON.parse(params.get('signedTransactions') as string) as string[]).map(
+    const transaction = (JSON.parse(data.signedTransactions) as string[]).map(
       tx => new VersionedTransaction(Transaction.from(Buffer.from(tx, 'hex')).compileMessage())
     )[0]
     connection.sendRawTransaction(transaction.serialize()).then(() => {
