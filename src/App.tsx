@@ -67,7 +67,7 @@ function App() {
       .then(() => {
         setHasTx(true)
       })
-      .then(() => {
+      .catch(() => {
         setHasError(true)
       })
   }, [])
