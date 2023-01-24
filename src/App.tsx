@@ -59,11 +59,11 @@ function App() {
       return
     }
 
-    const transaction = (JSON.parse(data.signedTransactions) as string[]).map(
-      tx => new VersionedTransaction(Transaction.from(Buffer.from(tx, 'hex')).compileMessage())
+    const transaction = (JSON.parse(data.signedTransactions) as string[]).map(tx =>
+      Buffer.from(tx, 'hex')
     )[0]
     connection
-      .sendRawTransaction(transaction.serialize())
+      .sendRawTransaction(transaction)
       .then(() => {
         setHasTx(true)
       })
