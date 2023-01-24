@@ -268,10 +268,9 @@ function App() {
           color='secondary'
           style={{ margin: 10, backgroundColor: 'gold', color: 'black' }}
           onClick={async () => {
-            const address =
-              typeof process.env.VITE_VERCEL_URL !== 'undefined'
-                ? `${process.env.VITE_VERCEL_URL}`
-                : 'https://solana-template-ten.vercel.app/'
+            const address = !!`${process.env.VITE_VERCEL_URL}`.length
+              ? `${process.env.VITE_VERCEL_URL}`
+              : 'https://solana-template-ten.vercel.app/'
             const a = await connection.getRecentBlockhash()
             const txs = [
               Buffer.from(
