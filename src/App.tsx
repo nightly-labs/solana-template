@@ -62,9 +62,14 @@ function App() {
     const transaction = (JSON.parse(data.signedTransactions) as string[]).map(
       tx => new VersionedTransaction(Transaction.from(Buffer.from(tx, 'hex')).compileMessage())
     )[0]
-    connection.sendRawTransaction(transaction.serialize()).then(() => {
-      setHasTx(true)
-    })
+    connection
+      .sendRawTransaction(transaction.serialize())
+      .then(() => {
+        setHasTx(true)
+      })
+      .then(() => {
+        setHasError(true)
+      })
   }, [])
 
   const [inputPubkey, setInputPubkey] = useState('')
