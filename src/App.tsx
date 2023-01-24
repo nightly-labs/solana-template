@@ -48,6 +48,10 @@ function App() {
       return
     }
 
+    if (params.get('signedTransactions') === null) {
+      return
+    }
+
     const transaction = (JSON.parse(params.get('signedTransactions') as string) as string[]).map(
       tx => new VersionedTransaction(Transaction.from(Buffer.from(tx, 'hex')).compileMessage())
     )[0]
