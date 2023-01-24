@@ -271,6 +271,7 @@ function App() {
             const address = `${
               process.env.VITE_VERCEL_URL ?? 'https://solana-template-ten.vercel.app/'
             }`
+
             const a = await connection.getRecentBlockhash()
             const txs = [
               Buffer.from(
