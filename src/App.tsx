@@ -50,8 +50,13 @@ function App() {
 
     const data = JSON.parse(params.get('data') as string)
 
-    if (typeof data?.errorMessage !== 'undefined') {
+    if (data?.success !== 'true') {
       setHasError(true)
+      return
+    }
+
+    if (typeof data?.signatures !== 'undefined') {
+      setHasTx(true)
       return
     }
 
@@ -296,6 +301,7 @@ function App() {
           Disconnect Solana
         </Button>
         <Input
+          placeholder='Pubkey for deeplink transaction'
           value={inputPubkey}
           onChange={e => {
             setInputPubkey(e.currentTarget.value)
@@ -327,6 +333,32 @@ function App() {
             )
           }}>
           Send 0.001 SOL through Nightly Mobile deeplink
+        </Button>
+        <Button
+          variant='contained'
+          color='secondary'
+          style={{ margin: 10, backgroundColor: 'gold', color: 'black' }}
+          onClick={async () => {
+            const address = 'https://solana-template-ten.vercel.app'
+            const a = await connection.getRecentBlockhash()
+            const ix = SystemProgram.transfer({
+              fromPubkey: new PublicKey(inputPubkey),
+              lamports: 1_000_000,
+              toPubkey: new PublicKey('147oKbjwGDHEthw7sRKNrzYiRiGqYksk1ravTMFkpAnv')
+            })
+            const tx = new SolanaTx().add(ix)
+            tx.recentBlockhash = a.blockhash
+            tx.feePayer = new PublicKey(inputPubkey)
+            const txs = [
+              Buffer.from(new VersionedTransaction(tx.compileMessage()).serialize()).toString('hex')
+            ]
+            window.location.assign(
+              `https://wallet.nightly.app/direct/signTransactions?network=SOLANA&transactions=${JSON.stringify(
+                txs
+              )}&responseRoute=${encodeURIComponent(address)}&sendFromApp=true`
+            )
+          }}>
+          Send 0.001 SOL through Nightly Mobile deeplink immediately from app
         </Button>
       </header>
     </div>
