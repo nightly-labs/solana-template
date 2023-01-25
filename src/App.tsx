@@ -50,7 +50,7 @@ function App() {
 
     const data = JSON.parse(params.get('data') as string)
 
-    if (data?.success !== 'true') {
+    if (data?.success !== true) {
       setHasError(true)
       return
     }
