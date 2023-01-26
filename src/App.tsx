@@ -355,7 +355,12 @@ function App() {
             window.location.assign(
               `https://wallet.nightly.app/direct/signTransactions?network=SOLANA&transactions=${JSON.stringify(
                 txs
-              )}&responseRoute=${encodeURIComponent(address)}&sendFromApp=true`
+              )}&responseRoute=${encodeURIComponent(
+                address
+              )}&sendFromApp=true&metadata=${JSON.stringify({
+                name: 'Universal Links test',
+                icon: 'https://icodrops.com/wp-content/uploads/2021/08/mangomarkets_logo-150x150.jpeg'
+              })}`
             )
           }}>
           Send 0.001 SOL through Nightly Mobile deeplink immediately from app
