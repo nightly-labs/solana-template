@@ -16,6 +16,7 @@ import { Button, Input, Typography } from '@material-ui/core'
 import { NCSolanaWalletAdapter } from '@nightlylabs/connect-solana'
 // @ts-expect-error
 import docs from './docs.png'
+import WormholeBridge from '@wormhole-foundation/wormhole-connect'
 
 const NightlySolana = new NightlyWalletAdapter()
 const connection = new Connection('https://api.devnet.solana.com')
@@ -78,6 +79,12 @@ function App() {
   }, [])
 
   const [inputPubkey, setInputPubkey] = useState('')
+
+  const config = {
+    env: 'mainnet'
+    // networks: ['ethereum', 'polygon', 'solana', 'bsc'] as ChainName[],
+    // tokens: ['ETH', 'WETH', 'MATIC', 'WMATIC', 'SOL']
+  }
 
   return (
     <div className='App'>
@@ -368,6 +375,8 @@ function App() {
           }}>
           Send 0.001 SOL through Nightly Mobile deeplink immediately from app
         </Button>
+
+        <WormholeBridge />
       </header>
     </div>
   )
